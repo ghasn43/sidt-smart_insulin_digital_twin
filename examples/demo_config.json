@@ -1,0 +1,30 @@
+>{
+  "description": "Demo configuration for Smart Insulin Digital Twin",
+  "scenario": {
+    "name": "Type1-like (no endogenous)",
+    "patient_type": "type1",
+    "glucose_baseline": 150.0,
+    "glucose_production_rate": 12.0,
+    "glucose_utilization_k1": 0.008,
+    "insulin_sensitivity_si": 0.015,
+    "meal_times": [480, 720, 1080],
+    "meal_sizes": [60, 75, 60],
+    "meal_absorption_rate": 0.020,
+    "basal_insulin_rate": 0.0
+  },
+  "insulin_params": {
+    "half_life_min": 7.0,
+    "potency_factor": 0.9,
+    "onset_min": 15.0,
+    "steady_state_clearance": 0.04
+  },
+  "nano_release": {
+    "release_model": "threshold",
+    "leak_rate": 0.8,
+    "max_release_rate": 5.0,
+    "threshold_glucose": 120.0,
+    "gain_above_threshold": 0.025,
+    "hypoglycemia_cutoff": 60.0,
+    "minimal_leak_at_hypoglycemia": 0.15
+  }
+}

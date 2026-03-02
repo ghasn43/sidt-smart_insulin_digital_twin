@@ -1,0 +1,400 @@
+Metadata-Version: 2.4
+Name: smart-insulin-digital-twin
+Version: 0.1.0
+Summary: A safe, purely computational simulation and optimization tool for glucose-insulin systems with nano-carrier release control and genetic manufacturability assessment.
+Author-email: Author <author@example.com>
+License: MIT
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: streamlit>=1.28.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: biopython>=1.81
+Requires-Dist: optuna>=3.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+
+# Smart Insulin Digital Twin
+
+## A Safe, Computational Research Tool for Glucose-Insulin System Simulation and Optimization
+
+**Version 0.1.0** | [License: MIT]
+
+---
+
+## ⚠️ CRITICAL DISCLAIMER
+
+**This application is a RESEARCH SIMULATION TOOL ONLY.**
+
+- **NOT for medical use, clinical dosing, or patient care decisions**
+- **NOT a replacement for professional medical advice**
+- **For educational exploration and research planning only**
+- This tool does **NOT** include:
+  - Wet-lab protocols or synthesis instructions
+  - Clinical dosing recommendations
+  - Guidance for creating living organisms or medicines
+  - Any external guidance for lab work
+
+---
+
+## Overview
+
+Smart Insulin Digital Twin is an integrated Python + Streamlit application for in-silico research on glucose-insulin control systems. It combines:
+
+1. **Physiology Simulation** – ODE-based glucose-insulin dynamics with customizable scenarios
+2. **Nano-Carrier Release Design** – Glucose-responsive controller optimization (threshold, sigmoid, PID models)
+3. **Genetic Manufacturability** – Computational assessment of DNA construct optimization for mammalian cell expression
+4. **AI-Driven Optimization** – Bayesian optimization (Optuna) for parameter tuning
+5. **Data Export & Reporting** – CSV, JSON, and design dossiers for downstream analysis
+
+---
+
+## Features
+
+### Physiology Module
+- Minimal model-inspired glucose-insulin ODE system
+- State variables: glucose, insulin, insulin effect
+- Built-in scenarios: Healthy-like and Type 1-like (no endogenous insulin)
+- Customizable meal schedules, insulin sensitivity, glucose production
+- Stable, numerically validated for 24-hour simulations
+
+### Glucose-Responsive Nano Release
+Three controllers for insulin delivery:
+- **Threshold:** Linear release above glucose threshold with safeguards
+- **Sigmoid:** Smooth graduated response to glucose changes
+- **PID:** Feedback control targeting a glucose setpoint
+
+All include hypoglycemia safety clamps and maximum release rate constraints.
+
+### Manufacturability Assessment (Computational Only)
+For a given **protein** or **DNA** sequence:
+- Reverse translate protein → DNA using host codon preference (CHO or HEK)
+- Codon optimize DNA while preserving amino acid sequence
+- Quality control checks:
+  - Global and sliding-window GC% content
+  - Forbidden restriction motifs (EcoRI, BamHI, HindIII, XhoI, + custom)
+  - Homopolymer detection (e.g., AAAAAAA)
+  - Simple repeat detection (e.g., ATATATAT)
+  - Heuristic splice site pattern scoring *(note: heuristic, not predictive)*
+- **Manufacturability Score (0–100)** with sub-scores for each criterion
+
+### Metrics & Analysis
+- **Time In Range (TIR):** % time 70–180 mg/dL
+- **Time Below Range (TBR):** % time <70 mg/dL
+- **Severe Hypoglycemia:** % time <54 mg/dL
+- **AUC High Glucose:** Integral above 180 mg/dL
+- **Stability Score:** Oscillation penalty (variance + derivative terms)
+- **Total Insulin Delivered:** Cumulative insulin infusion
+
+### Bayesian Optimization
+Uses **Optuna** (Tree-Structured Parzen Estimator sampler):
+- Search nano-release and/or insulin parameters
+- Objective: maximize TIR, minimize TBR (heavy penalty), minimize insulin, penalize oscillations
+- Optional manufacturability penalty for protein sequences
+- Trial history and convergence plots
+- Reproducible with fixed random seed
+
+---
+
+## Installation
+
+### Prerequisites
+- Python 3.11 or later
+- pip or anaconda
+
+### Setup
+
+```bash
+# Clone or download the repository
+cd smart_insulin_digital_twin
+
+# Option A: Install with pip
+pip install -e .
+
+# Option B: Install from requirements (if using requirements.txt)
+pip install -r requirements.txt
+
+# Optional: Install dev dependencies for testing
+pip install -e ".[dev]"
+```
+
+---
+
+## Quick Start
+
+### 1. Run the Streamlit App
+
+```bash
+streamlit run app_ui/Home.py
+```
+
+The app will open in your browser at `http://localhost:8501`.
+
+### 2. Example Workflow (5 Steps)
+
+#### Step 1: Simulate a Patient
+- Navigate to **"1_Simulate_Patient"**
+- Select scenario: "Type1-like"
+- Choose nano release model: "threshold"
+- Adjust parameters (leak rate, threshold glucose, etc.)
+- Click "▶️ Run Simulation"
+- View glucose trace, insulin, and metrics
+
+#### Step 2: Explore Nano Design
+- Navigate to **"2_Design_Nano_Release"**
+- Try different release models (threshold, sigmoid)
+- Adjust parameters in real time
+- Observe impact on simulation metrics
+
+#### Step 3: Assess Manufacturability
+- Navigate to **"3_Manufacturability_DNA"**
+- Paste example protein from `examples/insulin_variant_protein.fasta`
+- Select host (CHO or HEK)
+- Check codon optimization
+- View manufacturability score and warnings
+- Download optimized FASTA and report
+
+#### Step 4: Run AI Optimization
+- Navigate to **"4_AI_Optimize_System"**
+- Set number of trials (e.g., 30)
+- Enable nano-release parameter optimization
+- Click "▶️ Start Optimization"
+- Review best parameters and convergence plot
+
+#### Step 5: Export Results
+- Navigate to **"5_Reports_Exports"**
+- Download:
+  - Simulation data (CSV)
+  - Metrics (JSON/CSV)
+  - Configuration (JSON)
+  - Design dossier (comprehensive JSON)
+  - Manufacturability report
+
+---
+
+## Project Structure
+
+```
+smart_insulin_digital_twin/
+├── README.md                          # This file
+├── pyproject.toml                     # Project metadata, dependencies
+├── app_ui/
+│   ├── Home.py                        # Main landing page
+│   └── pages/
+│       ├── 1_Simulate_Patient.py      # Physiology simulation interface
+│       ├── 2_Design_Nano_Release.py   # Nano-carrier design explorer
+│       ├── 3_Manufacturability_DNA.py # DNA assessment interface
+│       ├── 4_AI_Optimize_System.py    # Bayesian optimization runner
+│       └── 5_Reports_Exports.py       # Data export and reporting
+├── backend/
+│   ├── __init__.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── models.py                  # Pydantic data models
+│   │   ├── metrics.py                 # Metric calculation
+│   │   ├── plotting.py                # Matplotlib plotting utilities
+│   │   └── io.py                      # File I/O (JSON, CSV, FASTA)
+│   ├── physiology/
+│   │   ├── __init__.py
+│   │   ├── minimal_model.py           # ODE-based glucose-insulin model
+│   │   ├── simulator.py               # High-level simulator wrapper
+│   │   └── scenarios.py               # Built-in patient scenarios
+│   ├── nano/
+│   │   ├── __init__.py
+│   │   ├── release_models.py          # Release controllers (threshold, sigmoid, PID)
+│   │   └── controllers.py             # (deprecated placeholder)
+│   ├── manufacturability/
+│   │   ├── __init__.py
+│   │   ├── codon_tables/
+│   │   │   ├── cho.json               # CHO codon frequency table
+│   │   │   └── hek.json               # HEK codon frequency table
+│   │   ├── reverse_translate.py       # Protein-to-DNA translation
+│   │   ├── codon_opt.py               # Codon optimization
+│   │   ├── qc_checks.py               # QC checks (GC, motifs, repeats)
+│   │   └── scoring.py                 # Manufacturability scoring
+│   └── optimize/
+│       ├── __init__.py
+│       ├── search_space.py            # Parameter search space definition
+│       ├── objectives.py              # Objective functions
+│       └── optuna_runner.py           # Optuna optimization wrapper
+├── examples/
+│   ├── demo_config.json               # Example configuration
+│   └── insulin_variant_protein.fasta  # Example protein sequence (DEMO only)
+├── tests/
+│   ├── test_physiology.py             # Physiology model tests
+│   ├── test_nano_release.py           # Nano controller tests
+│   ├── test_manufacturability.py      # Manufacturability tests
+│   └── test_objectives.py             # Optimization objective tests
+├── .gitignore
+└── requirements.txt (alternative to pyproject.toml)
+```
+
+---
+
+## Running Tests
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_physiology.py -v
+
+# Run with coverage
+pytest tests/ --cov=backend --cov-report=html
+```
+
+---
+
+## Configuration
+
+### Scenarios
+Built-in scenarios available in `backend/physiology/scenarios.py`:
+- **Healthy-like:** Good insulin sensitivity, basal insulin support
+- **Type 1-like:** No endogenous insulin, controlled by nano release
+
+### Manufacturability QC
+Default forbidden motifs (in `ManufacturingConfig`):
+- GAATTC (EcoRI)
+- GGATCC (BamHI)
+- AAGCTT (HindIII)
+- CTCGAG (XhoI)
+
+User can add custom motifs in the Streamlit UI.
+
+### Optimization Bounds
+Search space ranges are defined in `backend/optimize/search_space.py`:
+- Leak rate: 0.1–2.0 units/min
+- Max release rate: 3.0–10.0 units/min
+- Threshold glucose: 100–160 mg/dL
+- PID gains: user-adjustable
+
+---
+
+## Implementation Notes
+
+### Physiology Model
+- **Type:** Minimal model variant (glucose, insulin, insulin effect state)
+- **ODE Solver:** SciPy odeint (implicit Adams method)
+- **Stability:** Tested for 24-hour simulations; numerical validation included
+- **Meal Model:** Gaussian-like absorption (sigma ~30 min)
+
+### Nano Release Safety
+- All controllers clamp output to [0, max_release_rate]
+- Below hypoglycemia cutoff (default 60 mg/dL): forced to minimal leak
+- Prevents paradoxical insulin withdrawal during hypo events
+
+### Manufacturability Scoring
+- **Codon Usage (25%):** CAI-like metric using host codon frequencies
+- **GC Compliance (20%):** Penalty for windows outside target range
+- **Motif Risk (20%):** Points deducted per forbidden motif
+- **Repeat Risk (20%):** Points deducted for homopolymers and simple repeats
+- **Splice Site Risk (15%):** Heuristic penalty for GT/AG-like patterns *(note: simplified, not predictive)*
+
+### Optimization Objective
+$$\text{minimize: } \: \text{TBR} \times 100 + \text{SevereHG} \times 500 - \text{TIR} \times 0.5 + \text{Insulin} \times 0.1 + \text{Stability} \times 2$$
+
+---
+
+## Data Export Formats
+
+### CSV Exports
+- **Simulation Data:** time, glucose, insulin, insulin_released, meal_appearance
+- **Metrics:** metric name, value
+- **Trial History:** trial number, objective value, parameter values
+
+### JSON Exports
+- **Configuration:** scenario, insulin_params, nano_params
+- **Metrics:** all metrics as key-value pairs
+- **Design Dossier:** complete system configuration + metrics + manufacturability report
+- **Manufacturability Report:** scores, warnings, sequences, motif analysis
+
+---
+
+## Common Issues & Solutions
+
+### Issue: Simulation produces NaN
+- **Cause:** Unstable ODE parameters or extreme parameter values
+- **Solution:** Check insulin half-life (should be 4–15 min), leak rate, and gain values; avoid zero or negative values
+
+### Issue: Optimization doesn't converge
+- **Cause:** Search space too wide or contradictory objectives
+- **Solution:** Run more trials (50+); reduce parameter ranges; focus on fewer parameters
+
+### Issue: Low manufacturability score
+- **Cause:** Many forbidden motifs or GC content outside range
+- **Solution:** Enable codon optimization; check for alternative restriction sites; adjust GC target range
+
+---
+
+## References & Further Reading
+
+- **Minimal Model:** Bergman RN, Ider YZ, Bowden CR, Cobelli C. "Quantitative estimation of insulin sensitivity." Am. J. Physiol. 1981; 236(6):E667-E677.
+- **Codon Optimization:** *Plotkin JB, Kudla G. "Synonymous but not the same: the causes and consequences of codon bias." Nat. Rev. Genet. 2011; 12(1):32-42.*
+- **Glucose-Responsive Delivery:** *Zhu L, She H, Meng X, et al. "Enhancement of glucose-responsive insulin secretion from glucose oxidase-modified mesoporous silica nanoparticles." J. Mater. Chem. B. 2013; 1(9):1284-1291.*
+
+---
+
+## Contributing & Modifications
+
+This is an educational tool. To extend or modify:
+
+1. **Add new scenarios:** Edit `backend/physiology/scenarios.py`
+2. **Add new release models:** Extend `backend/nano/release_models.py`
+3. **Modify QC checks:** Edit `backend/manufacturability/qc_checks.py`
+4. **Change objective function:** Edit `backend/optimize/objectives.py`
+5. **Add new UI pages:** Create `app_ui/pages/X_Name.py`
+
+All changes should maintain:
+- Type hints in function signatures
+- Docstrings for all classes and methods
+- Unit tests for new functionality
+- Safety disclaimers for medical-adjacent features
+
+---
+
+## License
+
+MIT License – See LICENSE file for details.
+
+---
+
+## Acknowledgments
+
+This tool was designed for research and educational purposes, combining concepts from:
+- Glucose-insulin physiology (minimal model framework)
+- Control theory (PID feedback)
+- Synthetic biology (codon optimization, QC)
+- Machine learning (Bayesian optimization)
+
+---
+
+## Version History
+
+### v0.1.0 (Initial Release)
+- ✅ Core physiology model
+- ✅ Glucose-responsive release controllers
+- ✅ DNA manufacturability assessment
+- ✅ Bayesian optimization
+- ✅ Multi-page Streamlit UI
+- ✅ Comprehensive testing
+- ✅ Data export (CSV, JSON)
+
+---
+
+## Support & Questions
+
+For questions, issues, or suggestions:
+1. Review the inline code comments
+2. Check unit tests for usage examples
+3. Consult the Streamlit UI help text
+
+---
+
+**Created with ❤️ for research and education.**
+
+*Last updated: March 2026*
